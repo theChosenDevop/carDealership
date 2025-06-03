@@ -13,7 +13,7 @@ const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true },
     role: {
       type: String,
       enum: ['customer', 'manager'],
@@ -32,10 +32,9 @@ userSchema.pre<IUser>('save', async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (
-  this: IUser,
   password: string
 ): Promise<boolean> {
-  return bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password);
 };
 
-export const User: Model<IUser> = model<IUser>('User', userSchema);
+export const User = model<IUser>('User', userSchema);
